@@ -15,7 +15,7 @@ sudo apt install curl jq mpeg123
 The script is quite easy to use, you basically just need to do the following before running it:
 
 1. Create an API key
-2. Put your new API key in the script
+2. Put your new API key and your server address in the script
 3. Save and run it
 
 If the API key is correctly defined, you should see a text menu where you'll be asked to enter the number in front of the music genre. It will then automatically create an __IntantMix__ (_a feature from Jellyfin_) for the selected music genre which is apparently limited to __200__ songs.
