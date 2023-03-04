@@ -20,7 +20,7 @@ The script is quite easy to use, you basically just need to do the following bef
 
 If the API key is correctly defined, you should see a text menu where you'll be asked to enter the number in front of the music genre. It will then automatically create an __IntantMix__ (_a feature from Jellyfin_) for the selected music genre which is apparently limited to __200__ songs.
 
-That __InstantMix__ stream will be then passed to `mpeg123` (or `mpeg321`) that will read it and play the songs.
+That __InstantMix__ stream will be then passed to `mpg123` (or `mpg321`) that will read it and play the songs.
 
 To skip tracks or play the next one, just hit `[Ctrl + C]` once.
 
