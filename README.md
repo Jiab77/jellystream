@@ -7,7 +7,7 @@ A simple script that gives you the possibility to listen your music from your te
 The script has some dependencies that needs to be installed before trying to run it:
 
 ```
-sudo apt install curl jq mpeg123
+sudo apt install curl jq mpg321
 ```
 
 ## How to use it
