@@ -35,7 +35,7 @@ To skip tracks or play the next one, just hit `[Ctrl + C]` once.
 
 ### Can't stop the player
 
-When the stream has been loaded to `mpeg123` via the _stdin_ buffer, it can't be killed as usual while hiting `[Ctrl + C]` twice fast so the only solution I've found so far was to simply close the terminal session and it will stop everything.
+When the stream has been loaded to `mpg123` via the _stdin_ buffer, it can't be killed as usual while hiting `[Ctrl + C]` twice fast so the only solution I've found so far was to simply close the terminal session and it will stop everything.
 
 ## Credits
 
