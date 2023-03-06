@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2034 source=/dev/null
+# shellcheck disable=SC2034
 
 # Basic CLI Music Player based on the Jellyfin API
 # Made by Jiab77
 #
-# Version 0.1.0
+# Version 0.1.1
 
 # Options
 set +o xtrace
@@ -27,8 +27,9 @@ SERVER_ADDR="YOUR-SERVER-ADDRESS-WITH-PORT-IF-ANY"
 API_KEY="YOUR-API-KEY"
 LOGIN_AS="admin"
 
-# Load external config file if exist
+# Load config file if any
 if [[ -r $CONFIG_FILE ]]; then
+    # shellcheck source=/dev/null
     source "$CONFIG_DIR/$CONFIG_FILE"
 fi
 
