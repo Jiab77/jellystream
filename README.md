@@ -1,6 +1,22 @@
-# Jellystream
+# Jellystream <!-- omit from toc -->
 
 A simple script that gives you the possibility to listen your music from your terminal within your Jellyfin server API.
+
+## Current version
+
+The latest version is __`0.1.1`__.
+
+## Content <!-- omit from toc -->
+
+* [Current version](#current-version)
+* [Dependencies](#dependencies)
+* [How to use it](#how-to-use-it)
+  * [Config file](#config-file)
+* [Screenshot](#screenshot)
+* [Todolist](#todolist)
+* [Known issues](#known-issues)
+  * [Can't stop the player](#cant-stop-the-player)
+* [Author](#author)
 
 ## Dependencies
 
