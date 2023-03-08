@@ -18,6 +18,8 @@ The latest version is __`0.1.1`__.
   * [Can't stop the player](#cant-stop-the-player)
 * [Author](#author)
 
+---
+
 ## Dependencies
 
 The script has some dependencies that needs to be installed before trying to run it:
@@ -63,8 +65,8 @@ Here is an example of valid server addresses:
 
 ## Screenshot
 
-![image](screenshot-1.png)
-![image](screenshot-2.png)
+![image](images/screenshot-1.png)
+![image](images/screenshot-2.png)
 
 ## Todolist
 
