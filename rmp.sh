@@ -15,7 +15,7 @@
 #  - Add 'mpg123' support
 #  - Add 'gst123' support
 #
-# Version: 0.0.1
+# Version: 0.0.2
 
 # Options
 set +o xtrace
@@ -212,6 +212,8 @@ print_header
 
 # Checks
 [[ -z $BIN_MPV && -z $BIN_MPG123 && -z $BIN_GST123 ]] && die "You must have at least 'mpv' or 'mpg123' or 'gst123' installed to run this script."
+[[ -z $MUSIC_DIR ]] && die "You must define the 'MUSIC_DIR' variable to run this script."
+[[ ! -r $MUSIC_DIR ]] && die "Folder defined in 'MUSIC_DIR' variable is not readable."
 
 # Main
 run_player
