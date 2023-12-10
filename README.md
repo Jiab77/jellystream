@@ -4,17 +4,18 @@ A simple script that gives you the possibility to listen your music from your te
 
 ## Current version <!-- omit from toc -->
 
-The latest version is __`0.1.1`__.
+The latest version is __`0.2.0`__.
 
 ## Content <!-- omit from toc -->
 
 * [Dependencies](#dependencies)
+  * [Music players](#music-players)
 * [How to use it](#how-to-use-it)
   * [Config file](#config-file)
-* [Screenshot](#screenshot)
+* [Screenshots](#screenshots)
 * [Todolist](#todolist)
 * [Known issues](#known-issues)
-  * [Can't stop the player](#cant-stop-the-player)
+* [Extra](#extra)
 * [Author](#author)
 
 ---
@@ -24,8 +25,19 @@ The latest version is __`0.1.1`__.
 The script has some dependencies that needs to be installed before trying to run it:
 
 ```
-sudo apt install curl jq mpg321
+sudo apt install curl jq
 ```
+
+### Music players
+
+Here is a list of currently supported music players:
+
+* `mpg123`
+* `mpv`
+
+However, `mpv` remains the recommanded player as it provides extra functionalities like __desktop notifications__ which offer the possibility to control the player from a notification.
+
+> Support for `gst123` will be added soon but already exist in the [random music player](#extra).
 
 ## How to use it
 
@@ -62,42 +74,33 @@ Here is an example of valid server addresses:
 * `https://my-jellyfin-server.tld:1234`
 * `https://my-secret-jellyfin-tunnel.tld`
 
-## Screenshot
+## Screenshots
 
 ![image](images/screenshot-1.png)
 ![image](images/screenshot-2.png)
 
+> Screenshots needs to be updated.
+
 ## Todolist
 
 * [X] Display songs metadata
-* [ ] Improve metadata display
-* [ ] Improve navigation between tracks
-* [ ] Find a better way to kill the player
-* [ ] Find a better way to pass the generated stream to __Icecast__ or similar
+* [X] Improve metadata display
+* [X] Improve navigation between tracks
+* [ ] Improve authentication method by using `AuthenticateByName` API endpoint
+* [ ] Find a way to pass the generated stream to __Icecast__ or similar
+* [X] Find a better way to kill the player
 
 ## Known issues
 
-### Can't stop the player
+Nothing for the moment.
 
-When the stream has been loaded to `mpg123` via the _stdin_ buffer, it can't be killed as usual while hiting `[Ctrl + C]` twice fast ~~so the only solution I've found so far was to simply close the terminal session and it will stop everything.~~ so I've added a `kill` feature in the script.
+## Extra
 
-You can stop the music play by using the `kill` feature that way:
+I've kinda reused the same code / concept to create a random music player that can be run from CLI:
 
-```console
-$ ./jellystream.sh kill
-```
+* [Random Music Player](rmp.sh) - (RMP)
 
-You should get something similar:
-
-```console
-$ ./jellystream.sh kill
-
-Basic CLI Music Player based on JellyFin API - v0.1.0
-
-Killing music player...
-
-Done.
-```
+It will look for the default music folder (`XDG_MUSIC_DIR`) and generate a dynamic list of existing audio files in memory and pass it to one of the supported music players.
 
 ## Author
 
