@@ -11,7 +11,8 @@ The latest version is __`0.2.0`__.
 * [Dependencies](#dependencies)
   * [Music players](#music-players)
 * [How to use it](#how-to-use-it)
-  * [Config file](#config-file)
+  * [Desktop notifications](#desktop-notifications)
+* [Config file](#config-file)
 * [Screenshots](#screenshots)
 * [Todolist](#todolist)
 * [Known issues](#known-issues)
@@ -49,11 +50,15 @@ The script is quite easy to use, you basically just need to do the following bef
 
 If the API key is correctly defined, you should see a text menu where you'll be asked to enter the number in front of the music genre. It will then automatically create an __IntantMix__ (_a feature from Jellyfin_) for the selected music genre which is apparently limited to __200__ songs.
 
-That __InstantMix__ stream will be then passed to `mpg123` (or `mpg321`) that will read it and play the songs.
+That __InstantMix__ stream will be then passed to `mpg123` (or `mpv`) that will read it and play the songs.
 
-To skip tracks or play the next one, just hit `[Ctrl + C]` once.
+To control the player, just hit `h` or `?` to show the supported keys.
 
-### Config file
+### Desktop notifications
+
+The support for __desktop notifications__ is based on `dbus` and provided by `mps_mpris` library when `mpv` is installed. The script will look for the library and load it.
+
+## Config file
 
 Here is the config file structure:
 
@@ -62,6 +67,7 @@ Here is the config file structure:
 ```conf
 SERVER_ADDR="YOUR-SERVER-ADDRESS-WITH-PORT-IF-ANY"
 API_KEY="YOUR-API-KEY"
+LOGIN_AS="YOUR-USERNAME"
 ```
 
 __The `SERVER_ADDR` variable must contain the protocol and port.__
@@ -98,7 +104,7 @@ Nothing for the moment.
 
 I've kinda reused the same code / concept to create a random music player that can be run from CLI:
 
-* [Random Music Player](rmp.sh) - (RMP)
+* [Random Music Player](rmp.sh) - (_Or 'RMP' for short_)
 
 It will look for the default music folder (`XDG_MUSIC_DIR`) and generate a dynamic list of existing audio files in memory and pass it to one of the supported music players.
 
