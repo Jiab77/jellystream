@@ -56,7 +56,7 @@ To control the player, just hit `h` or `?` to show the supported keys.
 
 ### Desktop notifications
 
-The support for __desktop notifications__ is based on `dbus` and provided by `mps_mpris` library when `mpv` is installed. The script will look for the library and load it.
+The support for __desktop notifications__ is based on `dbus` and provided by `mpv_mpris` library when `mpv` is installed. The script will look for the library and load it.
 
 ## Config file
 
