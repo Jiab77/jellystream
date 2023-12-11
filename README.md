@@ -26,7 +26,7 @@ The latest version is __`0.2.0`__.
 The script has some dependencies that needs to be installed before trying to run it:
 
 ```
-sudo apt install curl jq
+sudo apt install curl jq sed
 ```
 
 ### Music players
