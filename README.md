@@ -52,7 +52,18 @@ If the API key is correctly defined, you should see a text menu where you'll be 
 
 That __InstantMix__ stream will be then passed to `mpg123` (or `mpv`) that will read it and play the songs.
 
-To control the player, just hit `h` or `?` to show the supported keys.
+To control the player, a support for `playerctl` has been implemented and you can pass the following actions to the scripts:
+
+* `status`
+* `stop`
+* `play`
+* `pause`
+* `prev`
+* `next`
+
+> These actions are only for `mpv`.
+
+Run the `man` command for `mpg123` or `mpv` to find the control keys for each music players.
 
 ### Desktop notifications
 
