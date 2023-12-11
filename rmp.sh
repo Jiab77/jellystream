@@ -15,7 +15,7 @@
 #  - Add 'mpg123' support
 #  - Add 'gst123' support
 #
-# Version: 0.0.2
+# Version: 0.0.3
 
 # Options
 set +o xtrace
@@ -101,6 +101,17 @@ function get_mpv_mpris_lib() {
   fi
   echo -n "$MPV_MPRIS_PATH"
 }
+function set_music_dir() {
+  # Get music dir from XDG Spec
+  [[ -z $MUSIC_DIR && -n $XDG_MUSIC_DIR ]] && MUSIC_DIR="$XDG_MUSIC_DIR"
+
+  # If no XDG Spec file found, try to find music folder from possible values
+  [[ -z $MUSIC_DIR && -r ~/Musique ]] && MUSIC_DIR=~/Musique
+  [[ -z $MUSIC_DIR && -r ~/Music ]] && MUSIC_DIR=~/Music
+
+  [[ -z $MUSIC_DIR ]] && die "You must define the 'MUSIC_DIR' variable to run this script."
+  [[ ! -r $MUSIC_DIR ]] && die "Folder defined in 'MUSIC_DIR' variable is not readable."
+}
 function gen_playlist() {
   find "$MUSIC_DIR" -type f -iname "*.mp3" -print
 }
@@ -115,6 +126,8 @@ function manage_player() {
   fi  
 }
 function run_player() {
+  set_music_dir
+
   if [[ -n $MUSIC_DIR ]]; then
     log "${NL}${WHITE}Initializing...${NC}${NL}"
 
@@ -203,17 +216,8 @@ print_header
 # Arguments
 [[ $1 == "status" || $1 == "stop" || $1 == "play" || $1 == "pause" || $1 == "prev" || $1 == "next" ]] && manage_player "$1"
 
-# Get music dir from XDG Spec
-[[ -z $MUSIC_DIR && -n $XDG_MUSIC_DIR ]] && MUSIC_DIR="$XDG_MUSIC_DIR"
-
-# If no XDG Spec file found, try to find music folder from possible values
-[[ -z $MUSIC_DIR && -r ~/Musique ]] && MUSIC_DIR=~/Musique
-[[ -z $MUSIC_DIR && -r ~/Music ]] && MUSIC_DIR=~/Music
-
 # Checks
 [[ -z $BIN_MPV && -z $BIN_MPG123 && -z $BIN_GST123 ]] && die "You must have at least 'mpv' or 'mpg123' or 'gst123' installed to run this script."
-[[ -z $MUSIC_DIR ]] && die "You must define the 'MUSIC_DIR' variable to run this script."
-[[ ! -r $MUSIC_DIR ]] && die "Folder defined in 'MUSIC_DIR' variable is not readable."
 
 # Main
 run_player
