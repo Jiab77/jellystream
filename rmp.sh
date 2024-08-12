@@ -15,91 +15,48 @@
 #  - Add 'mpg123' support
 #  - Add 'gst123' support
 #
-# Version: 0.0.3
+# Version: 0.0.4
 
 # Options
-set +o xtrace
-
-# Colors
-NC="\033[0m"
-NL="\n"
-BLUE="\033[1;34m"
-YELLOW="\033[1;33m"
-GREEN="\033[1;32m"
-RED="\033[1;31m"
-WHITE="\033[1;37m"
-PURPLE="\033[1;35m"
+[[ -r $HOME/.debug ]] && set -o xtrace || set +o xtrace
 
 # Config
 DEBUG_MODE=true
-CLEAR_SCREEN=true
+CLEAR_SCREEN=false
 SHOW_HEADER=true
 BUFFER_SIZE=0
 GST_VISUALIZATION_ENABLED=true
 GST_VISUALIZATION_TYPE="synaescope"
 MPV_GUI_ENABLED=false
+MPV_MIN_VER="0.34.0"
 
 # Internals
-BIN_GST123=$(which gst123 2>/dev/null)
-BIN_MPG123=$(which mpg123 2>/dev/null)
-BIN_MPV=$(which mpv 2>/dev/null)
-BIN_PLAYCTL=$(which playerctl 2>/dev/null)
-SCRIPT_DIR="$(dirname "$0")"
-SCRIPT_FILE="$(basename "$0")"
-SCRIPT_NAME="${SCRIPT_FILE//.sh/}"
-CONFIG_FILE="${SCRIPT_NAME}.conf"
+BIN_GST123=$(command -v gst123 2>/dev/null)
+BIN_MPG123=$(command -v mpg123 2>/dev/null)
+BIN_MPV=$(command -v mpv 2>/dev/null)
+BIN_VLC=$(command -v vlc 2>/dev/null)
+BIN_PLAYCTL=$(command -v playerctl 2>/dev/null)
+
+# Common
+if [[ -r "$(dirname "$0")/common/bash_funcs" ]]; then
+  source "$(dirname "$0")/common/bash_funcs" || ( echo -e "\nUnable to load '[script_dir]/common/bash_funcs' file.\n" && exit 255 )
+fi
 
 # Functions
-function die() {
-  echo -e "${NL}${RED}Error: ${YELLOW}${1}${NC}${NL}" >&2
-  exit 255
-}
-function log() {
-  echo -e "$1" >&2
-}
-function get_version() {
-  grep -i 'version' "$0" | awk '{ print $3 }' | head -n1
-}
-function set_console_title() {
-  echo -ne "\033]0;${1}\007"
-}
 function print_header() {
   [[ $CLEAR_SCREEN == true ]] && reset
-  [[ $SHOW_HEADER == true ]] && log "${NL}${BLUE}Simple Random CLI Music Player - ${GREEN}v$(get_version)${NC}${NL}"
+  [[ $SHOW_HEADER == true ]] && log_err "${NL}${BLUE}Simple Random CLI Music Player - ${GREEN}v$(get_version)${NC}${NL}"
 }
 function print_usage() {
   log "${NL}Usage: $SCRIPT_FILE [status|stop|play|pause|prev|next]${NL}"
   exit 1
 }
-function load_xdg_defs() {
-  if [[ -r ~/.config/user-dirs.dirs ]]; then
-    # shellcheck source=/dev/null
-    source ~/.config/user-dirs.dirs
-  fi
-  [[ -z $XDG_CONFIG_HOME ]] && XDG_CONFIG_HOME="$HOME/.config"
-}
-function load_config_file() {
-  if [[ -r "$XDG_CONFIG_HOME/$CONFIG_FILE" ]]; then
-    # shellcheck source=/dev/null
-    source "$XDG_CONFIG_HOME/$CONFIG_FILE"
-  elif [[ -r "$XDG_CONFIG_HOME/$SCRIPT_NAME/$CONFIG_FILE" ]]; then
-    # shellcheck source=/dev/null
-    source "$XDG_CONFIG_HOME/$SCRIPT_NAME/$CONFIG_FILE"
-  elif [[ -r "$SCRIPT_DIR/$CONFIG_FILE" ]]; then
-    # shellcheck source=/dev/null
-    source "$SCRIPT_DIR/$CONFIG_FILE"
-  fi
-}
-function get_mpv_mpris_lib() {
-  local MPV_MPRIS_PATH
-  if [[ -r "$XDG_CONFIG_HOME/mpv/scripts/mpris.so" ]]; then
-    MPV_MPRIS_PATH="$XDG_CONFIG_HOME/mpv/scripts/mpris.so"
-  elif [[ -r /etc/mpv/scripts/mpris.so ]]; then
-    MPV_MPRIS_PATH=/etc/mpv/scripts/mpris.so
-  else
-    MPV_MPRIS_PATH=
-  fi
-  echo -n "$MPV_MPRIS_PATH"
+function bootstrap() {
+  set_script_dir
+  set_script_file
+  set_config_file
+  load_xdg_defs
+  load_config_file
 }
 function set_music_dir() {
   # Get music dir from XDG Spec
@@ -119,17 +76,18 @@ function manage_player() {
   local OPERATION; OPERATION="$1"
   if [[ -n $BIN_PLAYCTL ]]; then
       playerctl -p mpv "$OPERATION" ; RET_CODE_CTL=$?
-      [[ ! $OPERATION == "status" ]] && playerctl -p mpv status
+      # [[ ! $OPERATION == "status" ]] && playerctl -p mpv status ; RET_CODE_CTL=$?
       exit $RET_CODE_CTL
   else
       die "You must have 'playerctl' installed to control music players."
-  fi  
+  fi
 }
 function run_player() {
   set_music_dir
 
   if [[ -n $MUSIC_DIR ]]; then
-    log "${NL}${WHITE}Initializing...${NC}${NL}"
+    log_err "${NL}${WHITE}Initializing...${NC}${NL}"
+    set_console_title "${SCRIPT_NAME}: Generating Random Mix..."
 
     # mpg123 sample command(s)
     # mpg123 --rva-mix --title --long-tag --control --shuffle -v "$MUSIC_DIR"/*/*/*.mp3
@@ -171,30 +129,40 @@ function run_player() {
               --term-title='Playing song [${playlist-pos-1}/${playlist-count}]: ${metadata/by-key/Artist} - ${metadata/by-key/Album} - ${metadata/by-key/Title}' \
               --playlist=- < <(gen_playlist)
         else
-          mpv --no-config \
-              --shuffle \
-              --no-audio-display \
-              --term-osd-bar \
-              --term-title='Playing song [${playlist-pos-1}/${playlist-count}]: ${metadata/by-key/Artist} - ${metadata/by-key/Album} - ${metadata/by-key/Title}' \
-              --playlist=- < <(gen_playlist)
+          if [[ $(compare_version $MPV_MIN_VER $(get_mpv_version)) -eq 0 ]]; then
+            mpv --no-config \
+                --shuffle \
+                --no-audio-display \
+                --term-osd-bar \
+                --term-title='Playing song [${playlist-pos-1}/${playlist-count}]: ${metadata/by-key/Artist} - ${metadata/by-key/Album} - ${metadata/by-key/Title}' \
+                --playlist=- < <(gen_playlist)
+          else
+            set_console_title "${SCRIPT_NAME}: Playing Random Mix..."
+            mpv --no-config \
+                --shuffle \
+                --no-audio-display \
+                --term-osd-bar \
+                --playlist=- < <(gen_playlist)
+          fi
         fi
       fi
-      exit $?
+      # exit $?
     elif [[ -n $BIN_MPG123 ]]; then
-      set_console_title "${SCRIPT_NAME}: Generating Random Mix..."
+      set_console_title "${SCRIPT_NAME}: Playing Random Mix..."
       if [[ $DEBUG_MODE == true ]]; then
         mpg123 --rva-mix --title --long-tag --control --shuffle --buffer $BUFFER_SIZE --smooth -vvv -@ - < <(gen_playlist)
       else
         mpg123 --rva-mix --title --long-tag --control --shuffle --buffer $BUFFER_SIZE --smooth -v -@ - < <(gen_playlist)
       fi
-      exit $?
+      # exit $?
     elif [[ -n $BIN_GST123 ]]; then
+      set_console_title "${SCRIPT_NAME}: Playing Random Mix..."
       if [[ $GST_VISUALIZATION_ENABLED == true ]]; then
         gst123 -v "$GST_VISUALIZATION_TYPE" --name="$SCRIPT_NAME" --shuffle -@ - < <(gen_playlist) 2>&1 | grep -vi themes
       else
         gst123 -x --name="$SCRIPT_NAME" --shuffle -@ - < <(gen_playlist) 2>&1 | grep -vi themes
       fi
-      exit $?
+      # exit $?
     else
       die "Unable to find proper audio backend."
     fi
@@ -204,8 +172,7 @@ function run_player() {
 }
 
 # Init
-load_xdg_defs
-load_config_file
+bootstrap
 
 # Header
 print_header
