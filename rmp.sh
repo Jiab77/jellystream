@@ -15,7 +15,7 @@
 #  - Add 'mpg123' support
 #  - Add 'gst123' support
 #
-# Version: 0.0.4
+# Version: 0.1.0
 
 # Options
 [[ -r $HOME/.debug ]] && set -o xtrace || set +o xtrace
@@ -48,7 +48,9 @@ function print_header() {
   [[ $SHOW_HEADER == true ]] && log_err "${NL}${BLUE}Simple Random CLI Music Player - ${GREEN}v$(get_version)${NC}${NL}"
 }
 function print_usage() {
-  log "${NL}Usage: $SCRIPT_FILE [status|stop|play|pause|prev|next]${NL}"
+  log "${NL}Usage: $SCRIPT_FILE [status|stop|play|pause|prev|next]"
+  log "${NL}Flags:"
+  log "  -d | --music-dir <directory>${TAB}Override default music folder"
   exit 1
 }
 function bootstrap() {
@@ -179,6 +181,11 @@ print_header
 
 # Usage
 [[ $1 == "-h" || $1 == "--help" ]] && print_usage
+
+# Overrides
+if [[ $1 == "-d" || $1 == "--music-dir" ]]; then
+  shift ; MUSIC_DIR="$1"
+fi
 
 # Arguments
 [[ $1 == "status" || $1 == "stop" || $1 == "play" || $1 == "pause" || $1 == "prev" || $1 == "next" ]] && manage_player "$1"
